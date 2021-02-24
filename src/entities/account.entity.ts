@@ -1,5 +1,6 @@
-import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
 import BasicEntity, { IBasic } from './basic.entity';
+import SoldierEntity from './soldier.entity';
 
 @Entity('account')
 export default class AccountEntity extends BasicEntity {
@@ -27,6 +28,9 @@ export default class AccountEntity extends BasicEntity {
 
   @Column({ type: 'varchar', length: 8, nullable: true, comment: '계급 코드' })
   classCode?: string;
+
+  @OneToMany((type) => SoldierEntity, (soldier) => soldier.accountId)
+  soldierList!: SoldierEntity[];
 
   getInterface(): IAccount {
     const iBasic = super.getInterface();

@@ -1,5 +1,6 @@
-import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
 import BasicEntity, { IBasic } from './basic.entity';
+import AccountEntity from './account.entity';
 
 @Entity('user')
 @Index(['email', 'status'])
@@ -33,6 +34,9 @@ export default class UserEntity extends BasicEntity {
   @Column({ type: 'datetime', nullable: true, comment: '마지막 로그인 일시' })
   @Index()
   lastSignAt?: string;
+
+  @OneToMany((type) => AccountEntity, (account) => account.userId)
+  accountList!: AccountEntity[];
 
   getInterface(): IUser {
     const iBasic = super.getInterface();
