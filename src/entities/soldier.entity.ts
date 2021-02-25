@@ -1,5 +1,6 @@
-import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
 import BasicEntity, { IBasic } from './basic.entity';
+import AccountEntity from './account.entity';
 
 @Entity('soldier')
 export default class SoldierEntity extends BasicEntity {
@@ -29,6 +30,10 @@ export default class SoldierEntity extends BasicEntity {
   @Column({ type: 'int', nullable: true, comment: '중급스킬' })
   skill?: number;
 
+  @ManyToOne((type) => AccountEntity, (account) => account.soldierList, { cascade: true })
+  @JoinColumn({ name: 'account_id' })
+  account!: AccountEntity;
+
   getInterface(): ISoldier {
     const iBasic = super.getInterface();
 
@@ -47,9 +52,9 @@ export default class SoldierEntity extends BasicEntity {
 }
 
 export interface ISoldier extends IBasic {
-  id: number;
-  userId: number;
-  accountId: number;
+  id?: number;
+  userId?: number;
+  accountId?: number;
   soldierCode?: string;
   attack?: number;
   guard?: number;

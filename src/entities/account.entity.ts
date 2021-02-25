@@ -1,6 +1,7 @@
-import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
+import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany, ManyToOne, JoinColumn, JoinTable } from 'typeorm';
 import BasicEntity, { IBasic } from './basic.entity';
 import SoldierEntity from './soldier.entity';
+import UserEntity from './user.entity';
 
 @Entity('account')
 export default class AccountEntity extends BasicEntity {
@@ -29,7 +30,22 @@ export default class AccountEntity extends BasicEntity {
   @Column({ type: 'varchar', length: 8, nullable: true, comment: '계급 코드' })
   classCode?: string;
 
-  @OneToMany((type) => SoldierEntity, (soldier) => soldier.accountId)
+  @ManyToOne((type) => UserEntity, (user) => user.accountList, { cascade: true })
+  @JoinColumn({ name: 'user_id' })
+  user!: UserEntity;
+
+  @OneToMany((type) => SoldierEntity, (soldier) => soldier.account)
+  @JoinTable({
+    name: 'account_soldiers',
+    joinColumn: {
+      name: 'account',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'soldier',
+      referencedColumnName: 'account_id',
+    },
+  })
   soldierList!: SoldierEntity[];
 
   getInterface(): IAccount {

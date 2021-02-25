@@ -5,7 +5,7 @@ import { JoinColumn } from 'typeorm/index';
 @Entity('code', { orderBy: { sort: 'ASC' } })
 @Index(['parentCode', 'code'])
 @Index(['code', 'status'])
-export class CodeDetailEntity extends BasicEntity {
+export class CodeEntity extends BasicEntity {
   @PrimaryGeneratedColumn({ type: 'int', comment: '코드 상세 계정' })
   id!: number;
 

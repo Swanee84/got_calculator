@@ -1,6 +1,7 @@
 import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
 import BasicEntity, { IBasic } from './basic.entity';
 import AccountEntity from './account.entity';
+import { hash } from 'argon2';
 
 @Entity('user')
 @Index(['email', 'status'])
@@ -12,12 +13,12 @@ export default class UserEntity extends BasicEntity {
   @Index()
   email!: string;
 
-  @Column({ type: 'varchar', length: 200, nullable: false, comment: '로그인 비밀번호' })
+  @Column({ type: 'varchar', length: 200, nullable: false, comment: '로그인 비밀번호', select: false })
   password?: string;
 
   @BeforeInsert()
   async hashPassword() {
-    // this.password = await argon2.hash(this.password)
+    this.password = await hash(this.password);
   }
 
   @Column({ type: 'varchar', length: 50, nullable: false, comment: '이름' })
@@ -35,7 +36,7 @@ export default class UserEntity extends BasicEntity {
   @Index()
   lastSignAt?: string;
 
-  @OneToMany((type) => AccountEntity, (account) => account.userId)
+  @OneToMany((type) => AccountEntity, (account) => account.user)
   accountList!: AccountEntity[];
 
   getInterface(): IUser {
