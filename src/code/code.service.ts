@@ -23,7 +23,6 @@ export class CodeService {
   async create(data: CodeEntity): Promise<CodeEntity> {
     const code = new CodeEntity();
     Object.assign(code, data);
-
     const createdData = await code.save();
     return createdData;
   }

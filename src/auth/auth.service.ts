@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import UserEntity, { IUser } from '../entities/user.entity';
 import { sign } from 'jsonwebtoken';
-import { SECRET } from '../config';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { verify } from 'argon2';
+import { getConnection } from 'typeorm';
+
+import UserEntity, { IUser } from '../entities/user.entity';
+import { SECRET } from '../config';
 
 // import { SignInLogModel } from '../common/logging.schema';
 
@@ -16,9 +18,10 @@ export class AuthService {
 
   async signIn(email: string, password: string): Promise<IUser> {
     const user = await UserEntity.findOne({
-      select: ['email', 'password', 'name', 'role', 'guildCode', 'lastSignAt', 'status'],
+      select: ['id', 'email', 'password', 'name', 'role', 'guildCode', 'lastSignAt'],
       where: {
         email,
+        status: 'NORMAL',
       },
     });
     if (!user) {
@@ -29,6 +32,8 @@ export class AuthService {
     if (await verify(user.password, password)) {
       // const signLog = new SignInLogModel({ userId: user.id });
       // await signLog.save();
+      await getConnection().createQueryBuilder().update(UserEntity).set({ lastSignAt: Date() }).where('id = :id', { id: user.id }).execute();
+
       return user.getInterface();
     } else {
       throw new HttpException({ status: 401, message: 'Invalid Password' }, 401);

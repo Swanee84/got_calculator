@@ -39,7 +39,9 @@ export class UserService {
   }
 
   async create(data: UserEntity): Promise<UserEntity> {
-    const createdData = await data.save();
+    const userEntity = new UserEntity();
+    Object.assign(userEntity, data);
+    const createdData = await userEntity.save();
     console.log('createdData >>', createdData);
     return createdData;
   }

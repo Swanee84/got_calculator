@@ -24,6 +24,9 @@ export default class AccountEntity extends BasicEntity {
   @Column({ type: 'int', nullable: true, comment: '집결 규모' })
   gatheringCount?: number;
 
+  @Column({ type: 'varchar', length: 8, nullable: true, comment: '소속 길드' })
+  guildCode?: string;
+
   @Column({ type: 'varchar', length: 8, nullable: true, comment: '계정 유형 코드' })
   typeCode?: string;
 

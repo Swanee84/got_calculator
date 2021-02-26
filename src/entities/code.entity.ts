@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import BasicEntity from './basic.entity';
-import { JoinColumn } from 'typeorm/index';
 
 @Entity('code', { orderBy: { sort: 'ASC' } })
 @Index(['parentCode', 'code'])
