@@ -4,8 +4,7 @@ npm install --save @nestjs/config
 npm install --save @nestjs/jwt passport-jwt
 npm install --save @nestjs/typeorm typeorm mysql2
 npm install --save typeorm-naming-strategies
-npm install --save mongodb mongoose @nestjs/mongoose
-npm install --save-dev @types/mongoose
+npm install --save mongodb mongoose @nestjs/mongoose # mongoose 가 5.11 이후 type 이 정의되어 @types/mongoose 는 필요없음
 ```
 
 ## ignore 파일 추가
@@ -132,3 +131,6 @@ export interface IBasicSearch {
   status: string
 }
 ```
+
+## MongoDB 설정
+1. mongoose scheme 작성

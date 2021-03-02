@@ -9,9 +9,10 @@ import { CodeModule } from './code/code.module';
 import { Connection } from 'typeorm';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AccountModule } from './account/account.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), ConfigModule.forRoot(), UserModule, SoldierModule, CodeModule, AccountModule],
+  imports: [TypeOrmModule.forRoot(), ConfigModule.forRoot(), UserModule, SoldierModule, CodeModule, AccountModule, DashboardModule],
   controllers: [AppController],
   providers: [AppService],
 })

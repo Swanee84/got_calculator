@@ -16,25 +16,29 @@ export class SoldierService {
     }
   }
 
+  async findOne(searchSoldierId: number): Promise<SoldierEntity> {
+    const data = await SoldierEntity.findOne({
+      where: {
+        id: searchSoldierId,
+      },
+      relations: ['user'],
+    });
+    return data;
+  }
+
   async create(data: SoldierEntity): Promise<SoldierEntity> {
     const createdData = await data.save();
     console.log('createdData >>', createdData);
     return createdData;
   }
 
-  async update(userId: number, data: SoldierEntity): Promise<SoldierEntity> {
-    const toUpdateData = await SoldierEntity.findOne({ id: userId });
-    if (!toUpdateData) {
-      return null;
-    }
-    const updated = Object.assign(toUpdateData, data);
-    const updatedData = await updated.save();
-    console.log('updatedData >>', updatedData);
+  async update(toUpdateData: SoldierEntity): Promise<SoldierEntity> {
+    const updatedData = await toUpdateData.save();
     return updatedData;
   }
 
-  async delete(userId: number, searchUserId: number): Promise<SoldierEntity> {
-    const toDeleteData = await SoldierEntity.findOne({ id: searchUserId });
+  async delete(userId: number, soldierId: number): Promise<SoldierEntity> {
+    const toDeleteData = await SoldierEntity.findOne({ id: soldierId });
     if (!toDeleteData) {
       return null;
     }

@@ -4,6 +4,7 @@ export class Constant {
   public static readonly HIDDEN: string = 'HIDDEN';
   public static readonly SUSPEND: string = 'SUSPEND';
 
+  public static readonly SELECT_NOT_FOUND: string = 'SELECT_NOT_FOUND';
   public static readonly UPDATE_NOT_FOUND: string = 'UPDATE_NOT_FOUND';
   public static readonly DELETE_NOT_FOUND: string = 'DELETE_NOT_FOUND';
   public static readonly UNAUTHORIZED: string = 'UNAUTHORIZED';
@@ -35,6 +36,7 @@ export class Message {
   public static readonly UNAUTHORIZED_USER: string = '인증되어있지 않음';
   public static readonly DISALLOWED_USER: string = '허용되지 않은 사용자';
   public static readonly EXPIRATION_AUTHORIZED: string = '인증 만료됨';
+  public static readonly NOT_FOUND_USER: string = '허용되지 않은 사용자';
 
   public static readonly DUPLICATE_DATA: string = '중복 데이터';
 }

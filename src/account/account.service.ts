@@ -48,10 +48,6 @@ export class AccountService {
       solderEntity.accountId = accountId;
       solderEntity.userId = userId;
       solderEntity.soldierCode = value;
-      solderEntity.attack = 100;
-      solderEntity.guard = 100;
-      solderEntity.heart = 100;
-      solderEntity.skill = 0;
       solderEntity.status = 'NORMAL';
       solderEntity.createdId = createdId;
 

@@ -1,13 +1,10 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { hash } from 'argon2';
-import { HttpException } from '@nestjs/common/exceptions/http.exception';
+import { Controller, Body, Param, Get, Post, Patch, Delete, ParseIntPipe } from '@nestjs/common';
 import { BaseResponse, StandardResponse } from '../common/response.interface';
 import { Constant, Message, RoleConst } from '../common/constant';
 import Auth from '../auth/auth.decorator';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
 import UserEntity, { IUser } from '../entities/user.entity';
-import AccountEntity from '../entities/account.entity';
 
 @Controller('user')
 export class UserController {
@@ -15,11 +12,9 @@ export class UserController {
 
   @Post('signIn')
   async signIn(@Body() userData: { email: string; password: string }): Promise<StandardResponse<string>> {
-    const password = await hash(userData.password);
-    console.log('password >> ', password);
     const user = await this.authService.signIn(userData.email, userData.password);
     if (!user) {
-      throw new HttpException({ user: 'not found' }, 401);
+      return Promise.resolve(new BaseResponse(Message.NOT_FOUND_USER, Constant.SELECT_NOT_FOUND, 401, false));
     }
     const token = this.authService.generateToken(user);
     const response = new StandardResponse({ data: token });
