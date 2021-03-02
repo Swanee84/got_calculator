@@ -1,5 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const SnakeNamingStrategy = require('typeorm-naming-strategies').SnakeNamingStrategy;
-// import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 module.exports = {
   type: 'mariadb',
   host: process.env.DB_HOST,
@@ -7,7 +7,7 @@ module.exports = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_DATA,
-  synchronize: true,
+  synchronize: process.env.DB_SYNC,
   logging: true,
   entities: ['dist/entities/**.entity{.ts,.js}'],
   cli: {
