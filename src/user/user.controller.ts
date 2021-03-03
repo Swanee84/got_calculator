@@ -54,11 +54,19 @@ export class UserController {
   async update(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchUserId: number, @Body() userData: UserEntity): Promise<BaseResponse> {
     const userId = user.id;
     const role = user.role;
-    if (userId != searchUserId && [RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0) {
+    const guildCode = user.guildCode;
+    const userEntity = await this.userService.findOne(searchUserId);
+
+    if (!userEntity) {
+      return Promise.resolve(new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false));
+    }
+    if (userId !== searchUserId && ([RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0 || guildCode !== userEntity.guildCode)) {
       return Promise.resolve(new BaseResponse(Message.DISALLOWED_USER, Constant.UNAUTHORIZED, 401, false));
     }
+
     userData.updatedId = userId;
-    const data = await this.userService.update(searchUserId, userData);
+    const toUpdateData = Object.assign(userEntity, userData);
+    const data = await this.userService.update(toUpdateData);
     const response = data ? new StandardResponse({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
     return Promise.resolve(response);
   }
@@ -67,10 +75,19 @@ export class UserController {
   async delete(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchUserId: number): Promise<BaseResponse> {
     const userId = user.id;
     const role = user.role;
-    if (userId != searchUserId && [RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0) {
+    const guildCode = user.guildCode;
+    const userEntity = await this.userService.findOne(searchUserId);
+
+    if (!userEntity) {
+      return Promise.resolve(new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false));
+    }
+    if (userId !== searchUserId && ([RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0 || guildCode !== userEntity.guildCode)) {
       return Promise.resolve(new BaseResponse(Message.DISALLOWED_USER, Constant.UNAUTHORIZED, 401, false));
     }
-    const data = await this.userService.delete(userId, searchUserId);
+
+    userEntity.updatedId = userId;
+    userEntity.status = Constant.DELETE;
+    const data = await this.userService.delete(userEntity);
     const response = data ? new StandardResponse({ data }) : new BaseResponse(Message.NOT_DELETE_DATA, Constant.DELETE_NOT_FOUND, 405, false);
     return Promise.resolve(response);
   }

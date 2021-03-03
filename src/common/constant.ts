@@ -1,7 +1,7 @@
 export class Constant {
   public static readonly NORMAL: string = 'NORMAL';
   public static readonly DELETE: string = 'DELETE';
-  public static readonly HIDDEN: string = 'HIDDEN';
+  public static readonly WITHDRAW: string = 'WITHDRAW';
   public static readonly SUSPEND: string = 'SUSPEND';
 
   public static readonly SELECT_NOT_FOUND: string = 'SELECT_NOT_FOUND';
@@ -10,15 +10,6 @@ export class Constant {
   public static readonly UNAUTHORIZED: string = 'UNAUTHORIZED';
 
   public static readonly HEADER_KEY: string = 'authorization';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public static returnDbErrorResponse(error: any): any {
-    console.log('<--Sequelize: [Run SQL Error]-->\n' + error);
-    // const response: IResponse = { result: false, message: 'SQL Error', jsonData: error }
-    return null;
-  }
-
-  public static readonly soldiers = ['INFANTRY', 'CAVALRY', 'SPEARMAN', 'ARCHER'];
 }
 
 export class RoleConst {
@@ -28,6 +19,14 @@ export class RoleConst {
   public static readonly COUNT: string = 'COUNT';
   public static readonly BARON: string = 'BARON';
   public static readonly KNIGHT: string = 'KNIGHT';
+}
+
+export class SoldierConst {
+  public static readonly INFANTRY: string = 'INFANTRY';
+  public static readonly CAVALRY: string = 'CAVALRY';
+  public static readonly SPEARMAN: string = 'SPEARMAN';
+  public static readonly ARCHER: string = 'ARCHER';
+  public static readonly soldiers = [SoldierConst.INFANTRY, SoldierConst.CAVALRY, SoldierConst.SPEARMAN, SoldierConst.ARCHER];
 }
 
 export class Message {

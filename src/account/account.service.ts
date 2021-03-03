@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import AccountEntity, { IAccount } from '../entities/account.entity';
-import { Constant } from '../common/constant';
+import { Constant, SoldierConst } from '../common/constant';
 import SoldierEntity from '../entities/soldier.entity';
+import { getConnection } from 'typeorm';
 
 @Injectable()
 export class AccountService {
@@ -15,7 +16,7 @@ export class AccountService {
   }
 
   async checkDuplicateAccount(userId: number, name: string): Promise<boolean> {
-    const count = await AccountEntity.count({ where: { userId, name } });
+    const count = await AccountEntity.count({ where: { userId, name, status: Constant.NORMAL } });
     return count > 0;
   }
 
@@ -23,7 +24,7 @@ export class AccountService {
     try {
       const data: AccountEntity = await AccountEntity.findOne({
         where: { id: accountId },
-        relations: ['soldierList'],
+        relations: ['soldierList', 'user'],
       });
       return data;
     } catch (err) {
@@ -35,7 +36,8 @@ export class AccountService {
     const accountEntity = new AccountEntity();
     Object.assign(accountEntity, data);
     const createdData = await accountEntity.save();
-    console.log('createdData >>', createdData);
+
+    // 인게임 계정을 등록하면 4개 병종정보를 기본으로 저장한다.
     if (!createdData.soldierList) {
       createdData.soldierList = [];
     }
@@ -43,7 +45,9 @@ export class AccountService {
     const accountId = createdData.id;
     const userId = createdData.userId;
     const createdId = createdData.createdId;
-    for (const value of Constant.soldiers) {
+    const soldiers = SoldierConst.soldiers;
+
+    for (const value of soldiers) {
       const solderEntity = new SoldierEntity();
       solderEntity.accountId = accountId;
       solderEntity.userId = userId;
@@ -61,25 +65,20 @@ export class AccountService {
     return createdData;
   }
 
-  async update(accountId: number, data: AccountEntity): Promise<AccountEntity> {
-    const toUpdateData = await AccountEntity.findOne({ id: accountId });
-    if (!toUpdateData) {
-      return null;
-    }
-    const updated = Object.assign(toUpdateData, data);
-    const updatedData = await updated.save();
+  async update(toUpdateData: AccountEntity): Promise<AccountEntity> {
+    const updatedData = await toUpdateData.save();
     console.log('updatedData >>', updatedData);
     return updatedData;
   }
 
-  async delete(userId: number, searchAccountId: number): Promise<AccountEntity> {
-    const toDeleteData = await AccountEntity.findOne({ id: searchAccountId });
-    if (!toDeleteData) {
-      return null;
-    }
-    toDeleteData.updatedId = userId;
-    toDeleteData.status = Constant.DELETE;
+  async delete(toDeleteData: AccountEntity): Promise<AccountEntity> {
     const deletedData = await toDeleteData.save();
+    await getConnection()
+      .createQueryBuilder()
+      .update(SoldierEntity)
+      .set({ status: Constant.DELETE })
+      .where('account_id = :account_id', { account_id: toDeleteData.id })
+      .execute(); // account 에 속해있는 soldier 들의 status 도 DELETE 로 변경한다. 좀 더 깔끔한 방법 없나?
     console.log('deletedData >>', deletedData);
     return deletedData;
   }

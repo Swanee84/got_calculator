@@ -21,7 +21,7 @@ export class SoldierService {
       where: {
         id: searchSoldierId,
       },
-      relations: ['user'],
+      relations: ['account', 'user'],
     });
     return data;
   }

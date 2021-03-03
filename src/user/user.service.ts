@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import UserEntity, { IUser } from '../entities/user.entity';
 import { Constant } from '../common/constant';
 import AccountEntity from '../entities/account.entity';
+import { getConnection } from 'typeorm';
+import SoldierEntity from '../entities/soldier.entity';
 
 @Injectable()
 export class UserService {
@@ -26,18 +28,6 @@ export class UserService {
     }
   }
 
-  async accountFindOne(accountId: number): Promise<AccountEntity> {
-    try {
-      const data: AccountEntity = await AccountEntity.findOne({
-        where: { id: accountId },
-        relations: ['soldierList'],
-      });
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  }
-
   async create(data: UserEntity): Promise<UserEntity> {
     const userEntity = new UserEntity();
     Object.assign(userEntity, data);
@@ -46,26 +36,28 @@ export class UserService {
     return createdData;
   }
 
-  async update(userId: number, data: UserEntity): Promise<UserEntity> {
-    const toUpdateData = await UserEntity.findOne({ id: userId });
-    if (!toUpdateData) {
-      return null;
-    }
-    const updated = Object.assign(toUpdateData, data);
-    const updatedData = await updated.save();
+  async update(userEntity: UserEntity): Promise<UserEntity> {
+    const updatedData = await userEntity.save();
     console.log('updatedData >>', updatedData);
     return updatedData;
   }
 
-  async delete(userId: number, searchUserId: number): Promise<UserEntity> {
-    const toDeleteData = await UserEntity.findOne({ id: searchUserId });
-    if (!toDeleteData) {
-      return null;
-    }
-    toDeleteData.updatedId = userId;
-    toDeleteData.status = Constant.DELETE;
-    const deletedData = await toDeleteData.save();
+  async delete(userEntity: UserEntity): Promise<UserEntity> {
+    const deletedData = await userEntity.save();
     console.log('deletedData >>', deletedData);
+    await getConnection()
+      .createQueryBuilder()
+      .update(AccountEntity)
+      .set({ status: Constant.DELETE })
+      .where('user_id = :user_id', { user_id: userEntity.id })
+      .execute();
+
+    await getConnection()
+      .createQueryBuilder()
+      .update(SoldierEntity)
+      .set({ status: Constant.DELETE })
+      .where('user_id = :user_id', { user_id: userEntity.id })
+      .execute();
     return deletedData;
   }
 }

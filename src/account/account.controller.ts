@@ -36,26 +36,42 @@ export class AccountController {
   }
 
   @Patch(':id')
-  async update(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchUserId: number, @Body() accountData: AccountEntity): Promise<BaseResponse> {
+  async update(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchAccountId: number, @Body() accountData: AccountEntity): Promise<BaseResponse> {
     const userId = user.id;
     const role = user.role;
-    if (userId != searchUserId && [RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0) {
+    const guildCode = user.guildCode;
+    const accountEntity = await this.accountService.findOne(searchAccountId);
+    if (
+      userId != accountEntity.userId &&
+      ([RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0 || guildCode !== accountEntity.user.guildCode)
+    ) {
       return Promise.resolve(new BaseResponse(Message.DISALLOWED_USER, Constant.UNAUTHORIZED, 401, false));
     }
-    accountData.updatedId = userId;
-    const data = await this.accountService.update(searchUserId, accountData);
+    Object.assign(accountEntity, accountData);
+    accountEntity.updatedId = userId;
+    const data = await this.accountService.update(accountEntity);
     const response = data ? new StandardResponse({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
     return Promise.resolve(response);
   }
 
   @Delete(':id')
-  async delete(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchUserId: number): Promise<BaseResponse> {
+  async delete(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchAccountId: number): Promise<BaseResponse> {
     const userId = user.id;
     const role = user.role;
-    if (userId != searchUserId && [RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0) {
+    const guildCode = user.guildCode;
+    const accountEntity = await this.accountService.findOne(searchAccountId);
+    if (!accountEntity) {
+      return Promise.resolve(new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false));
+    }
+    if (
+      userId != accountEntity.userId &&
+      ([RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0 || guildCode !== accountEntity.user.guildCode)
+    ) {
       return Promise.resolve(new BaseResponse(Message.DISALLOWED_USER, Constant.UNAUTHORIZED, 401, false));
     }
-    const data = await this.accountService.delete(userId, searchUserId);
+    accountEntity.updatedId = userId;
+    accountEntity.status = Constant.DELETE;
+    const data = await this.accountService.delete(accountEntity);
     const response = data ? new StandardResponse({ data }) : new BaseResponse(Message.NOT_DELETE_DATA, Constant.DELETE_NOT_FOUND, 405, false);
     return Promise.resolve(response);
   }

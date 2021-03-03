@@ -35,16 +35,19 @@ export class SoldierController {
   async update(@Auth({}) user: IUser, @Param('id', new ParseIntPipe()) searchSoldierId: number, @Body() soldierData: SoldierEntity): Promise<BaseResponse> {
     const userId = user.id;
     const role = user.role;
-
-    const soldier = await this.soldierService.findOne(searchSoldierId);
-    if (!soldier) {
+    const guildCode = user.guildCode;
+    const soldierEntity = await this.soldierService.findOne(searchSoldierId);
+    if (!soldierEntity) {
       return Promise.resolve(new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false));
     }
-    if (userId != soldier.createdId && ([RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0 || user.guildCode !== soldier.user.guildCode)) {
+    if (
+      userId != soldierEntity.userId &&
+      ([RoleConst.ADMIN, RoleConst.DUKE, RoleConst.MARQUIS].indexOf(role) < 0 || guildCode !== soldierEntity.account.guildCode)
+    ) {
       return Promise.resolve(new BaseResponse(Message.DISALLOWED_USER, Constant.UNAUTHORIZED, 401, false));
     }
     soldierData.updatedId = userId;
-    const updated = Object.assign(soldier, soldierData);
+    const updated = Object.assign(soldierEntity, soldierData);
     const data = await this.soldierService.update(updated);
     const response = data ? new StandardResponse({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
     return Promise.resolve(response);
