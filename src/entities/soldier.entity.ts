@@ -19,6 +19,9 @@ export default class SoldierEntity extends BasicEntity {
   @Column({ type: 'varchar', length: 8, nullable: true, comment: '병종 코드' })
   soldierCode?: string;
 
+  @Column({ type: 'int', nullable: true, default: 5, comment: '병종 등급' })
+  tier?: number;
+
   @Column({ type: 'int', nullable: true, default: 100, comment: '공격' })
   attack?: number;
 

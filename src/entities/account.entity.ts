@@ -1,4 +1,4 @@
-import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany, ManyToOne, JoinColumn, JoinTable } from 'typeorm';
+import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, Index, OneToMany, ManyToOne, JoinColumn, JoinTable, UpdateDateColumn } from 'typeorm';
 import BasicEntity, { IBasic } from './basic.entity';
 import SoldierEntity from './soldier.entity';
 import UserEntity from './user.entity';
@@ -32,6 +32,9 @@ export default class AccountEntity extends BasicEntity {
 
   @Column({ type: 'varchar', length: 8, nullable: true, comment: '계급 코드' })
   classCode?: string;
+
+  @UpdateDateColumn({ type: 'datetime', nullable: true, comment: '마지막 정보 입력 일시' })
+  lastUpdatedAt?: Date;
 
   @ManyToOne((type) => UserEntity, (user) => user.accountList, { cascade: true })
   @JoinColumn({ name: 'user_id' })
