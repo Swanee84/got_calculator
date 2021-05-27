@@ -11,20 +11,20 @@ export class UserController {
   constructor(private readonly userService: UserService, private readonly authService: AuthService) {}
 
   @Post('signIn')
-  async signIn(@Body() userData: { email: string; password: string }): Promise<StandardResponse<string>> {
+  async signIn(@Body() userData: { email: string; password: string }): Promise<StandardResponse<{ user: IUser; token: string }>> {
     const user = await this.authService.signIn(userData.email, userData.password);
     if (!user) {
       return Promise.resolve(new BaseResponse(Message.NOT_FOUND_USER, Constant.SELECT_NOT_FOUND, 401, false));
     }
     const token = this.authService.generateToken(user);
-    const response = new StandardResponse({ data: token });
+    const response = new StandardResponse({ data: { token, user } });
     return Promise.resolve(response);
   }
 
   @Get('tokenRefresh') // @Headers('authorization') authorization: string
-  async tokenRefresh(@Auth() user: IUser): Promise<StandardResponse<string>> {
+  async tokenRefresh(@Auth() user: IUser): Promise<StandardResponse<{ user: IUser; token: string }>> {
     const token = this.authService.generateToken(user);
-    const response = new StandardResponse({ data: token });
+    const response = new StandardResponse({ data: { token, user } });
     return Promise.resolve(response);
   }
 
