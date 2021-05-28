@@ -73,6 +73,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       role: user.role,
+      guildCode: user.guildCode,
     };
     try {
       const token: string = sign(payload, SECRET, { expiresIn: 60 * 60 * 24 * 7 }); // 토큰 유효 기간 7일

@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext, HttpException } from '@nestjs/common';
 import { SECRET } from '../config';
 import { verify } from 'jsonwebtoken';
-import { Message } from '../common/constant';
+import { Constant, Message } from '../common/constant';
 
 export type RoleCheck = {
   key?: string;
@@ -25,7 +25,7 @@ const Auth = createParamDecorator((data: RoleCheck, ctx: ExecutionContext) => {
   }
 
   // in case a route is not protected, we still want to get the optional auth user from jwt
-  const token = req.headers.authorization;
+  const token = req.headers[Constant.HEADER_KEY] || req.query[Constant.HEADER_KEY];
   if (!token) {
     throw new HttpException({ status: 403, message: Message.UNAUTHORIZED_USER }, 403);
   }
