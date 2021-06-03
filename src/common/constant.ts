@@ -10,6 +10,7 @@ export class Constant {
   public static readonly UNAUTHORIZED: string = 'UNAUTHORIZED';
 
   public static readonly HEADER_KEY: string = 'authorization';
+  public static readonly ROOT: string = 'ROOT';
 }
 
 export class RoleConst {
