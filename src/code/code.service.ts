@@ -27,10 +27,18 @@ export class CodeService {
     return createdData;
   }
 
-  async update(code: string, data: CodeEntity): Promise<CodeEntity> {
-    const toUpdateData = await CodeEntity.findOne({ code });
+  async update(codeId: number, data: CodeEntity): Promise<CodeEntity> {
+    const toUpdateData = await CodeEntity.findOne({ id: codeId });
+    if (!toUpdateData) {
+      return null;
+    }
     const updated = Object.assign(toUpdateData, data);
     const updatedData = await updated.save();
+    const beforeCode = toUpdateData.code;
+    if (data && data.parentCode === Constant.ROOT && beforeCode !== updatedData.code) {
+      // 상위 코드의 코드가 변경되면 하위 코드의 parentCode 도 일괄 변경한다.
+      await this.subCodeUpdate(updatedData.code, beforeCode);
+    }
     if (data.parentCode === Constant.ROOT && toUpdateData.status != data.status) {
       await getConnection()
         .createQueryBuilder()
@@ -42,9 +50,9 @@ export class CodeService {
     return updatedData;
   }
 
-  async delete(code: string): Promise<CodeEntity> {
-    const toDeleteData = await CodeEntity.findOne({ code });
-    const deletedData = await toDeleteData.remove();
+  async delete(codeId: number): Promise<CodeEntity> {
+    const toUpdateData = await CodeEntity.findOne({ id: codeId });
+    const deletedData = await toUpdateData.remove();
     return deletedData;
   }
 

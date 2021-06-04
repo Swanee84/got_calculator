@@ -25,26 +25,21 @@ export class CodeController {
     return Promise.resolve(response);
   }
 
-  @Patch(':code')
+  @Patch(':codeId')
   async update(
     @Auth({ key: 'id', roles: [RoleConst.ADMIN] }) userId: number,
-    @Param('code') code: string,
+    @Param('codeId') codeId: number,
     @Body() codeData: CodeEntity,
   ): Promise<StandardResponse<CodeEntity>> {
     codeData.updatedId = userId;
-    const data = await this.codeService.update(code, codeData);
-    if (data.parentCode === Constant.ROOT && code !== codeData.code) {
-      // 상위 코드의 코드가 변경되면 하위 코드의 parentCode 도 일괄 변경한다.
-      console.log(`${code} !== ${codeData.code} = ${code !== codeData.code}`);
-      await this.codeService.subCodeUpdate(codeData.code, code);
-    }
+    const data = await this.codeService.update(codeId, codeData);
     const response = data ? new StandardResponse<CodeEntity>({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
     return response;
   }
 
-  @Delete(':code')
-  async delete(@Auth({ key: 'id', roles: [RoleConst.ADMIN] }) userId: number, @Param('code') code: string): Promise<StandardResponse<CodeEntity>> {
-    const data = await this.codeService.delete(code);
+  @Delete(':codeId')
+  async delete(@Auth({ key: 'id', roles: [RoleConst.ADMIN] }) userId: number, @Param('code') codeId: number): Promise<StandardResponse<CodeEntity>> {
+    const data = await this.codeService.delete(codeId);
     if (data.parentCode === Constant.ROOT) {
       await this.codeService.subCodeDelete(data.code);
     }
