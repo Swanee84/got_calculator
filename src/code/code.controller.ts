@@ -38,7 +38,7 @@ export class CodeController {
   }
 
   @Delete(':codeId')
-  async delete(@Auth({ key: 'id', roles: [RoleConst.ADMIN] }) userId: number, @Param('code') codeId: number): Promise<StandardResponse<CodeEntity>> {
+  async delete(@Auth({ key: 'id', roles: [RoleConst.ADMIN] }) userId: number, @Param('codeId') codeId: number): Promise<StandardResponse<CodeEntity>> {
     const data = await this.codeService.delete(codeId);
     if (data.parentCode === Constant.ROOT) {
       await this.codeService.subCodeDelete(data.code);
