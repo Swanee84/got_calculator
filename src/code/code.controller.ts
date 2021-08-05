@@ -21,7 +21,8 @@ export class CodeController {
   async create(@Auth({ key: 'id', roles: [RoleConst.ADMIN] }) userId: number, @Body() codeData: CodeEntity): Promise<StandardResponse<CodeEntity>> {
     codeData.createdId = userId;
     const data = await this.codeService.create(codeData);
-    const response = new StandardResponse<CodeEntity>({ data });
+    const dataList = await this.codeService.findAll();
+    const response = data ? new StandardResponse<CodeEntity>({ dataList }) : new BaseResponse(Message.NOT_INSERT_DATA, Constant.INSERT_NOT_FOUND, 405, false);
     return Promise.resolve(response);
   }
 
@@ -33,7 +34,8 @@ export class CodeController {
   ): Promise<StandardResponse<CodeEntity>> {
     codeData.updatedId = userId;
     const data = await this.codeService.update(codeId, codeData);
-    const response = data ? new StandardResponse<CodeEntity>({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
+    const dataList = await this.codeService.findAll();
+    const response = data ? new StandardResponse<CodeEntity>({ dataList }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
     return response;
   }
 
@@ -43,7 +45,8 @@ export class CodeController {
     if (data.parentCode === Constant.ROOT) {
       await this.codeService.subCodeDelete(data.code);
     }
-    const response = data ? new StandardResponse<CodeEntity>({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
+    const dataList = await this.codeService.findAll();
+    const response = data ? new StandardResponse<CodeEntity>({ dataList }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false);
     return response;
   }
 }

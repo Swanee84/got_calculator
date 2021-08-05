@@ -12,6 +12,7 @@ export const LoggingSchema = new Schema({
   success: { type: Boolean, required: false },
   message: { type: String, required: false },
   stack: { type: String, required: false },
+  signedUser: { type: Object, required: false },
 });
 
 export interface Logging extends Document {
@@ -25,6 +26,7 @@ export interface Logging extends Document {
   success?: boolean;
   message?: string;
   stack?: string;
+  signedUser?: any;
 }
 
 export const LoggingModel = model<Logging>('logging', LoggingSchema);

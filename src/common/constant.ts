@@ -4,6 +4,7 @@ export class Constant {
   public static readonly WITHDRAW: string = 'WITHDRAW';
   public static readonly SUSPEND: string = 'SUSPEND';
 
+  public static readonly INSERT_NOT_FOUND: string = 'INSERT_NOT_FOUND';
   public static readonly SELECT_NOT_FOUND: string = 'SELECT_NOT_FOUND';
   public static readonly UPDATE_NOT_FOUND: string = 'UPDATE_NOT_FOUND';
   public static readonly DELETE_NOT_FOUND: string = 'DELETE_NOT_FOUND';
@@ -31,6 +32,7 @@ export class SoldierConst {
 }
 
 export class Message {
+  public static readonly NOT_INSERT_DATA: string = '수정할 데이터 없음';
   public static readonly NOT_UPDATE_DATA: string = '수정할 데이터 없음';
   public static readonly NOT_DELETE_DATA: string = '삭제할 데이터 없음';
   public static readonly UNAUTHORIZED_USER: string = '인증되어있지 않음';
