@@ -23,6 +23,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const isAuthRequest = request.route.path === '/api/user/signIn' || request.route.path === '/api/user/tokenRefresh';
     if (isAuthRequest) {
+      await _sleep(4000);
       return next.handle();
     }
     const method = request.method;
@@ -31,8 +32,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const body = request.body;
     const query = request.query;
 
-    const logging = new LoggingModel({ method, url, params, body, query });
-
+    const logging = new LoggingModel({ method, url, params, body, query, signedUser: request.decodedUser });
     const now = Date.now();
     return next.handle().pipe(
       tap(
@@ -59,3 +59,4 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 }
+const _sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
