@@ -7,7 +7,7 @@ module.exports = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_DATA,
-  synchronize: process.env.DB_SYNC,
+  synchronize: process.env.DB_SYNC === 'true',
   logging: true,
   entities: ['dist/entities/**.entity{.ts,.js}'],
   cli: {
@@ -15,6 +15,7 @@ module.exports = {
     migrationsDir: 'src/migration',
     subscribersDir: 'src/subscriber',
   },
+  migrations: ['src/migration/*{.ts,.js}'],
   namingStrategy: new SnakeNamingStrategy(),
   dropSchema: false,
 };

@@ -31,6 +31,12 @@ export default class SoldierEntity extends BasicEntity {
   @Column({ type: 'int', nullable: true, default: 100, comment: '생명' })
   heart?: number;
 
+  @Column({ type: 'int', nullable: true, default: 100, comment: '고급지휘관' })
+  highCommander?: number;
+
+  @Column({ type: 'int', nullable: true, default: 100, comment: '룰렛지휘관' })
+  middleCommander?: number;
+
   @Column({ type: 'int', nullable: true, default: 0, comment: '중급스킬' })
   skill?: number;
 
@@ -56,6 +62,8 @@ export default class SoldierEntity extends BasicEntity {
       attack: this.attack,
       guard: this.guard,
       heart: this.heart,
+      highCommander: this.highCommander,
+      middleCommander: this.middleCommander,
       skill: this.skill,
       ...iBasic,
     };
@@ -70,5 +78,7 @@ export interface ISoldier extends IBasic {
   attack?: number;
   guard?: number;
   heart?: number;
+  highCommander?: number;
+  middleCommander?: number;
   skill?: number;
 }

@@ -7,7 +7,7 @@ import { getConnection } from 'typeorm';
 import UserEntity, { IUser } from '../entities/user.entity';
 import { SECRET } from '../config';
 
-import { SignInLogModel } from '../common/logging.schema';
+// import { SignInLogModel } from '../common/logging.schema';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,7 @@ export class AuthService {
 
   async signIn(email: string, password: string): Promise<IUser> {
     const user = await UserEntity.findOne({
-      select: ['id', 'email', 'password', 'name', 'role', 'guildCode', 'lastSignAt'],
+      select: ['id', 'email', 'password', 'role', 'guildCode', 'lastSignAt'],
       where: {
         email,
         status: 'NORMAL',
@@ -30,8 +30,8 @@ export class AuthService {
     }
 
     if (await verify(user.password, password)) {
-      const signLog = new SignInLogModel({ userId: user.id });
-      await signLog.save();
+      // const signLog = new SignInLogModel({ userId: user.id });
+      // await signLog.save();
       await getConnection().createQueryBuilder().update(UserEntity).set({ lastSignAt: Date() }).where('id = :id', { id: user.id }).execute();
 
       return user.getInterface();
