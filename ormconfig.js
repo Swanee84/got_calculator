@@ -15,7 +15,7 @@ module.exports = {
     migrationsDir: 'src/migration',
     subscribersDir: 'src/subscriber',
   },
-  migrations: ['src/migration/*{.ts,.js}'],
+  migrations: ['dist/migration/*.js'],
   namingStrategy: new SnakeNamingStrategy(),
   dropSchema: false,
 };
