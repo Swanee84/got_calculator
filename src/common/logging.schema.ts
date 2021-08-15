@@ -32,23 +32,29 @@ export interface Logging extends Document {
 export const LoggingModel = model<Logging>('logging', LoggingSchema);
 
 export const SignInLogSchema = new Schema({
-  academyId: { type: Number, required: false },
-  branchId: { type: Number, required: false },
   userId: { type: Number, required: false },
-  category: { type: String, required: false },
-  signDate: { type: String, required: false },
-  signTime: { type: String, required: false },
+  email: { type: String, required: false },
   lastSignAt: { type: Date, required: true, default: Date.now },
 });
 
 export interface SignInLog extends Document {
-  academyId?: number;
-  branchId?: number;
   userId?: number;
-  category?: string;
-  signDate?: Date;
-  signTime?: Date;
+  email?: string;
   lastSignAt?: Date;
 }
 
 export const SignInLogModel = model<SignInLog>('sign_in_log', SignInLogSchema);
+
+export const SignFailLogSchema = new Schema({
+  userId: { type: Number, required: false },
+  email: { type: String, required: false },
+  signDate: { type: Date, required: true, default: Date.now },
+});
+
+export interface SignFailLog extends Document {
+  userId?: number;
+  email?: string;
+  signDate?: Date;
+}
+
+export const SignFailLogModel = model<SignFailLog>('sign_fail_log', SignFailLogSchema);

@@ -7,7 +7,7 @@ import { getConnection } from 'typeorm';
 import UserEntity, { IUser } from '../entities/user.entity';
 import { SECRET } from '../config';
 
-// import { SignInLogModel } from '../common/logging.schema';
+import { SignInLogModel, SignFailLogModel } from '../common/logging.schema';
 
 @Injectable()
 export class AuthService {
@@ -25,21 +25,21 @@ export class AuthService {
       },
     });
     if (!user) {
+      const signFailLog = new SignFailLogModel({ userId: 0, email: email });
+      await signFailLog.save();
       throw new HttpException({ status: 401, message: 'Email Not Found' }, 401);
-      return null;
     }
 
-    if (await verify(user.password, password)) {
-      // const signLog = new SignInLogModel({ userId: user.id });
-      // await signLog.save();
-      await getConnection().createQueryBuilder().update(UserEntity).set({ lastSignAt: Date() }).where('id = :id', { id: user.id }).execute();
-
-      return user.getInterface();
-    } else {
+    if (!(await verify(user.password, password))) {
+      const signFailLog = new SignFailLogModel({ userId: user.id, email: email });
+      await signFailLog.save();
       throw new HttpException({ status: 401, message: 'Invalid Password' }, 401);
     }
+    const signLog = new SignInLogModel({ userId: user.id, email: email });
+    await signLog.save();
+    await getConnection().createQueryBuilder().update(UserEntity).set({ lastSignAt: Date() }).where('id = :id', { id: user.id }).execute();
 
-    return null;
+    return user.getInterface();
   }
 
   async findById(id: number): Promise<IUser> {

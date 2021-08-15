@@ -98,6 +98,27 @@ MONGODB_PORT=27000
    `ormconfig.js` 에 작성
 1. AppModule class  
    @Module 의 imports 에 `import { TypeOrmModule } from '@nestjs/typeorm';`, `TypeOrmModule.forRoot()` 추가
+1. ormconfig.js 설정
+```javascript
+module.exports = {
+  type: 'mariadb',
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_DATA,
+  synchronize: process.env.DB_SYNC === 'true', // .env 에서 읽으면 문자열이므로 무조건 true 가 되기 때문에 === 조건 추가
+  logging: true,
+  entities: ['dist/entities/**.entity{.ts,.js}'],
+  migrations: ['dist/migration/*.js'], // entities 와 migrations 는 빌드된 경로를 이용한다.
+  cli: {
+    entitiesDir: 'src/entities',
+    migrationsDir: 'src/migration',
+    subscribersDir: 'src/subscriber',
+  },
+  dropSchema: false,
+};
+```
 1. Basic Entity
 ```typescript
 import { Column, CreateDateColumn, UpdateDateColumn, BaseEntity, Index } from 'typeorm'
@@ -131,6 +152,7 @@ export interface IBasicSearch {
   status: string
 }
 ```
+## migration
 
 ## MongoDB 설정
 1. mongoose scheme 작성
